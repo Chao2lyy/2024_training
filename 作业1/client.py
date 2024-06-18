@@ -2,6 +2,7 @@ import requests
 import json
 
 def query_image(image_name):
+    '''根据图片名查询'''
     url = f"http://localhost:8000/query_by_image/{image_name}"
     response = requests.get(url)
     if response.status_code == 200:

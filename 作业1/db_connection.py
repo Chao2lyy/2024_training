@@ -230,6 +230,34 @@ class MySQLDatabase:
         else:
             print("No connection to the database")
 
+    def query_data_by_image(self, image_name):
+        '''根据图片名查询'''
+        if self.cursor:
+            query = '''
+            SELECT
+                calib_lidar_to_camera_json,
+                label_camera_std_json,
+                label_lidar_std_json,
+                image_path
+            FROM
+                data_info
+            WHERE
+                image_path = %s
+            '''
+            try:
+                self.cursor.execute(query, ('image/'+image_name,))
+                result = self.cursor.fetchone()
+                if result:
+                    return {
+                        'calib_lidar_to_camera_json': json.loads(result[0]),
+                        'label_camera_std_json': json.loads(result[1]),
+                        'label_lidar_std_json': json.loads(result[2]),
+                        'image_path': result[3]
+                    }
+            except mysql.connector.Error as err:
+                print(f"Error: {err}")
+        return None
+    
     def query_data(self, query):
         '''查询数据'''
         if self.cursor:

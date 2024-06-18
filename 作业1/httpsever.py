@@ -6,7 +6,7 @@ import uvicorn
 
 app = FastAPI()
 
-# 初始化数据库连接
+# 初始化数据库
 db = MySQLDatabase(user='root', password='123456', host='127.0.0.1', database='trainingDB', port=3208)
 db.connect()
 db.create_database()

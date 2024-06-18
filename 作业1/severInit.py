@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
         db.create_table()
 
-        # 读取并解析JSON文件
+        # 读取并解析JSON
         with open('download/single-vehicle-side-example/data_info.json', 'r') as file:
             data = json.load(file)
 

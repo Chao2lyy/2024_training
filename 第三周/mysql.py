@@ -1,64 +1,40 @@
-import pymysql
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
-def Connection():
-    try:
-        db = pymysql.connect(host="localhost", user="root", password="123", database="students")
-        print('数据库连接成功!')
-    except pymysql.Error as e:
-        print('数据库连接失败'+str(e))
-    finally:
-        db.close()
-        
-def CreateTable():
-    db = pymysql.connect(host="localhost", user="root", password="123", database="students")
-    cur = db.cursor()
-    try:
-        cur.execute('DROP TABLE IF EXISTS student')
-        sqlQuery = '''CREATE TABLE student(
-                                   id  int  primary key,
-                                   name CHAR(20) NOT NULL ,
-                                   classroom CHAR(20),
-                                   email CHAR(20),
-                                   age int )'''
-        cur.execute(sqlQuery)
-        print("数据表创建完成！")
-    except pymysql.Error as error:
-        print("数据表创建失败：" + str(error))
-        db.rollback()
-    finally:
-        db.close()
+class User(Base):
+    __tablename__ = 'users'
 
-def Insert():
-    db = pymysql.connect(host="localhost", user="root", password="123", database="students")
-    cur = db.cursor()
-    sqlQuery = " INSERT INTO Student (id, name, classroom, email, age) VALUE (%s,%s,%s,%s,%s) "
-    value = (1010, "侯超","1班", "123.com", 20)
-    try:
-        cur.execute(sqlQuery, value)
-        db.commit()
-        print('数据插入成功！')
-    except pymysql.Error as error:
-        print("数据插入失败：" + str(error))
-        db.rollback()
-    finally:
-        db.close()
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    age = Column(Integer)
 
-def Update():
-    db = pymysql.connect(host="localhost", user="root", password="123", database="students")
-    cur = db.cursor()
-    sqlQuery = "UPDATE Student SET age= %s WHERE name=%s"
-    name = "侯超"
-    age = 19
-    value = age, name
-    try:
-        cur.execute(sqlQuery, value)
-        db.commit()
-        print('数据更新成功！')
-    except pymysql.Error as e:
-        print("数据更新失败：" + str(e))
-        # 发生错误时回滚
-        db.rollback()
-    finally:
-        db.close()
+# 创建数据库引擎
+engine = create_engine('mysql+pymysql://root:root@192.168.110.88:3306/ht-atp')
 
+# 创建表，获取会话
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# 增加数据
+user1 = User(name='xiaoming', age=25)
+session.add(user1)
+session.commit()
+
+# 查询数据
+user = session.query(User).filter_by(name='xiaoming').first()
+print(f"查询到的用户: {user.name}, {user.age}")
+
+# 更新数据
+user.age = 26
+session.commit()
+
+# 删除数据
+session.delete(user)
+session.commit()
+
+# 关闭会话
+session.close()

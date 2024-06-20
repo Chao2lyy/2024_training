@@ -11,7 +11,7 @@ graph LR
 
 + **步骤1（数据下载、初始化数据库、启动服务器）**
 
-`python serverinit.py` 
+`python serverInit.py` 
 
 如下
 ```Connection successful
